@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <title>Importar CSV a Postgresql- Base Servicios</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+    <link rel="stylesheet" href="css/estilos.css">
+
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+
+    <!-- jQuery library -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+
+    <!-- Latest compiled JavaScript -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+
+</head>
+
+<body>
+
+    <div class="card-header p-0 pt-1">
+        <div class="row justify-content-center mt-2 mb-2">
+            <div class="mr-2">
+                <button class="btn btn-primary btncuenta" onclick="cuentas()" id="btncuentas"
+                    name="btncuentas">Importar</button>
+            </div>
+            <!--div class="mr-2">
+                <button class="btn btn-primary btncobros" onclick="cobros()" id="btncobros"
+                    name="btncobros">Cobros</button>
+            </div-->
+            <div class="mr-2">
+                <button class="btn btn-primary" onclick="exportar()" name="btnexportar">Exportar</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="" id="cuentas">
+        <header>
+            <div class="alert alert-info">
+                <h3>Importar CSV Servicios</h3>
+            </div>
+        </header>
+        <div class="container">
+            <form action="files.php" method="post" enctype="multipart/form-data" id="filesForm">
+                <div class="form-group row justify-content-center">
+                    <label for="selectedCliente" class="col-sm-2 col-form-label"><h5>Cliente:</h5></label>
+                    <div class="col-sm-3">
+                        <select id="selectedCliente" class="form-control">
+                            <option value="bancop">1. Bancop</option>
+                            <option value="interfisa">2. Interfisa</option>
+                            <option value="lux">3. Lux</option>
+                            <option value="sudameris">4. Sudameris</option>
+                            <option value="vinanzas">5. Vinanzas</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group row justify-content-center">
+                    <label for="selectedTipo" class="col-sm-2 col-form-label"><h5>Tipo:</h5></label>
+                    <div class="col-sm-3">
+                        <select id="selectedTipo" class="form-control">
+                            <option value="cuentas">1. Clientes</option>
+                            <option value="pagos">2. Pagos</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group row justify-content-center">
+                    <label for="fecha_insert" class="col-sm-2 col-form-label"><h5>Fecha:</h5></label>
+                    <div class="col-sm-2">
+                        <input type="date" name="fecha_insert" id="fecha_insert" class="form-control" required
+                            title="Fecha de la importacion de la base">
+                    </div>
+                    <div class="col-sm-1">
+                        <input required class="form-control" style="transform: scale(0.6);" type="checkbox" id="checkbox" name="checkbox">
+                    </div>
+                </div>
+
+                <div class="form-group row justify-content-center">
+                    <label for="fileContacts" class="col-sm-2 col-form-label"><h5>Archivo:</h5></label>
+                    <div class="col-sm-3">
+                        <input required class="form-control" type="file" id="fileContacts" name="fileContacts">
+                    </div>
+                </div>
+
+                <div class="form-group row justify-content-center">
+                    <div class="col-sm-5">
+                        <button id="btnsubir" type="button" onclick="tipoArchivo()"
+                            class="btn btn-primary btn-block">Cargar</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <div class="alert alert-info">
+            <h3 id="mensaje"></h3>
+        </div>
+    </div>
+
+    <div class="d-none" id="exportar">
+        <header>
+            <div class="alert alert-info">
+                <h3>Exportar CSV Servicios</h3>
+            </div>
+        </header>
+        <div class="container">
+            <form action="exportar.php" method="post" enctype="multipart/form-data" id="exportacion" name="exportacion">
+                <div class="form-group row justify-content-center">
+                    <label for="exportCliente" class="col-sm-2 col-form-label"><h5>Cliente:</h5></label>
+                    <div class="col-sm-3">
+                        <select id="exportCliente" name="exportCliente" class="form-control">
+                            <option value="bancop">1. Bancop</option>
+                            <option value="interfisa">2. Interfisa</option>
+                            <option value="lux">3. Lux</option>
+                            <option value="vinanzas">4. Sudameris</option>
+                            <option value="vinanzas">5. Vinanzas</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="form-group row justify-content-center">
+                    <label for="exportTipo" class="col-sm-2 col-form-label"><h5>Tipo:</h5></label>
+                    <div class="col-sm-3">
+                        <select id="exportTipo" name="exportTipo" class="form-control selectpicker show-tick"  
+                        data-style="btn-info"required>
+                            <option value="cuentas">Base de clientes</option>
+                            <option value="pagos">Base de Pagos</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="form-group row justify-content-center">
+                    <label for="exportDate" class="col-sm-2 col-form-label"><h5>Fecha:</h5></label>
+                    <div class="col-sm-3">
+                        <input type="date" name="exportDate" id="exportDate" class="form-control" required
+                        title="Fecha de la importacion de la base">
+                    </div>
+                </div>
+
+                <div class="form-group row justify-content-center">
+                    <div class="col-sm-5">
+                        <button type="summit"  class="btn btn-primary btn-block">
+                            Exportar</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <div class="alert alert-info">
+            <h3 id="mensaje2"></h3>
+        </div>
+    </div>
+
+    <div class="d-none" id="cobros" name="cobros">
+        <header>
+            <div class="alert alert-info">
+                <h3>Importar CSV COBROS a BD Servicios (COBROS)</h3>
+            </div>
+        </header>
+        <div class="container">
+            <form action="files.php" method="post" enctype="multipart/form-data" id="filesForm2">
+                <div class="col-md-4 offset-md-4">
+                    <select id="selectCliente" class="form-control">
+                        <option value="interfisa">1. Interfisa</option>
+                        <option value="bancop">2. Bancop</option>
+                    </select>
+                    <input class="form-control" type="file" id="fileContacts2" name="fileContacts2">
+                    <button id="btnsubir2" type="button" onclick="uploadContactsCobros()"
+                        class="btn btn-primary form-control">Cargar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</body>
+
+</html>
+
+<script type="text/javascript">
+
+    $("#mensaje").html("En espera de subida");
+    $("#mensaje2").html("En espera de bajada");
+    
+    // Obtén la fecha actual
+    var today = new Date();
+
+        // Formatea la fecha como "YYYY-MM-DD"
+        var formattedDate = today.toISOString().split('T')[0];
+
+        // Asigna la fecha formateada al campo de entrada
+        document.getElementById('fecha_insert').value = formattedDate;
+        document.getElementById('exportDate').value = formattedDate;
+
+        // Función para habilitar o deshabilitar el campo de fecha según el estado del checkbox
+        function toggleDateField() {
+            var checkbox = document.getElementById('checkbox');
+            var fechaInsert = document.getElementById('fecha_insert');
+            // Cambia el atributo "readonly" del campo de fecha según el estado del checkbox
+            fechaInsert.readOnly = !checkbox.checked;
+
+            if (checkbox.checked) {
+                checkbox.title = "Deseas usar la fecha actual?";
+            } else {
+                fechaInsert.value = formattedDate;
+                checkbox.title = "Deseas cambiar la fecha de insercion?";
+            }
+            // Establece la fecha actual si el checkbox está marcado
+        }
+
+        // Asigna la función al evento de cambio del checkbox
+        document.getElementById('checkbox').addEventListener('change', toggleDateField);
+
+        // Ejecuta la función al cargar la página para inicializar el estado correctamente
+        toggleDateField();
+
+    function cuentas() {
+        //$("#cobros").addClass("d-none");
+        $("#exportar").addClass("d-none");
+        $("#cuentas").removeClass("d-none");
+        $("#fileContacts").val("");
+    }
+
+    function cobros() {
+        $("#cuentas").addClass("d-none");
+        $("#exportar").addClass("d-none");
+        $("#cobros").removeClass("d-none");
+
+        $("#fileContacts2").val("");
+    }
+
+    function exportar() {
+        $("#cuentas").addClass("d-none");
+        //$("#cobros").addClass("d-none");
+        $("#exportar").removeClass("d-none");
+        
+        $("#fileContacts2").val("");
+    }
+
+    function tipoArchivo(){
+        var selectedCuenta = $("#selectedTipo").val();
+        if(selectedCuenta == 'cuentas'){
+            uploadContacts();
+        }else if(selectedCuenta == 'pagos'){
+            uploadContactsCobros();
+        }else{
+            alert('Seleccione un tipo de archivo.')
+        }
+    }
+
+    function ArchivoExport(){
+        var selectedCliente = $("#exportCliente").val();
+        var selectedCuenta = $("#exportTipo").val();
+        var selectedDate = $("#exportDate").val();
+        console.log("Se exporta: " + selectedCliente + " con fecha: " + selectedDate)
+        var Form = new FormData($('#exportacion')[0]);
+        Form.append('selectedCliente', selectedCliente);
+        Form.append('selectedTipo', selectedTipo);
+        Form.append('selectedDate', selectedDate);
+        $.ajax({
+            url: "exportar.php",
+            type: "post",
+            data: Form,
+            processData: false,
+            contentType: false,
+            beforeSend: function (data) {
+                $('#butonExport').removeClass('btn-primary');
+                $('#butonExport').addClass('btn-warning');
+                $("#mensaje2").html("Generando archivo");
+            },
+            success: function (data) {
+                $('#butonExport').removeClass('btn-warning');
+                $('#butonExport').addClass('btn-primary');
+                $("#mensaje2").html("Archivo generado: " + data);
+            }
+        });
+    }
+
+    function uploadContacts() {
+        var selectedCliente = $("#selectedCliente").val();
+        var selectedCuenta = $("#selectedTipo").val();
+        var selectedDate = $("#fecha_insert").val();
+        var fileInput = $("#fileContacts");
+        // Verificar si se ha seleccionado un archivo
+        if (fileInput[0].files.length === 0) {
+            alert("Por favor, seleccione un archivo.");
+            return;
+        }
+        var Form = new FormData($('#filesForm')[0]);
+        Form.append('selectedCliente', selectedCliente);
+        Form.append('selectedTipo', selectedTipo);
+        Form.append('selectedDate', selectedDate);
+        $.ajax({
+            url: "importarCuentas.php",
+            type: "post",
+            data: Form,
+            processData: false,
+            contentType: false,
+            beforeSend: function (data) {
+                $('#btnsubir').removeClass('btn-primary');
+                $('#btnsubir').addClass('btn-warning');
+                $("#mensaje").html("Procesando subida");
+            },
+            success: function (data) {
+                $('#btnsubir').removeClass('btn-warning');
+                $('#btnsubir').addClass('btn-primary');
+                $("#mensaje").html(data);
+                alert('Registros Agregados!' + data);
+                $("#fileContacts").val("");
+            }
+        });
+    }
+
+    function uploadContactsCobros() {
+        var selectedCliente = $("#selectedCliente").val();
+        var selectedCuenta = $("#selectedTipo").val();
+        var selectedDate = $("#fecha_insert").val();
+        var fileInput = $("#fileContacts");
+        // Verificar si se ha seleccionado un archivo
+        if (fileInput[0].files.length === 0) {
+            alert("Por favor, seleccione un archivo.");
+            return;
+        }
+        var Form = new FormData($('#filesForm')[0]);
+        Form.append('selectedCliente', selectedCliente);
+        Form.append('selectedTipo', selectedTipo);
+        Form.append('selectedDate', selectedDate);
+        $.ajax({
+            url: "importarCobros.php",
+            type: "post",
+            data: Form,
+            processData: false,
+            contentType: false,
+            beforeSend: function (data) {
+                $('#btnsubir').removeClass('btn-primary');
+                $('#btnsubir').addClass('btn-warning');
+                $("#mensaje").html("Procesando subida");
+            },
+            success: function (data) {
+                $('#btnsubir').removeClass('btn-warning');
+                $('#btnsubir').addClass('btn-primary');
+                $("#mensaje").html(data);
+                alert('Registros Agregados!' + data);
+            }
+        });
+    }
+</script>
